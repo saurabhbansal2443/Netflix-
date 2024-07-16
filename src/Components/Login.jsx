@@ -2,9 +2,25 @@ import React, { useState } from "react";
 import Header from "./Header";
 import { useFormik } from "formik";
 import { LoginSchema, SignupSchema } from "../Utils/validations";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { app } from "../Utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { addUser } from "../Utils/userSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   let [isSignup, setIsSignup] = useState(true);
+  let [errorMsg, setErrorMsg] = useState(null);
+
+  let navigate = useNavigate();
+  let dispatch = useDispatch();
+
+  const auth = getAuth(app);
 
   const formik = useFormik({
     initialValues: {
@@ -14,13 +30,52 @@ const Login = () => {
     },
     validationSchema: isSignup ? SignupSchema : LoginSchema,
     onSubmit: (values, action) => {
-      console.log(values);
+      setErrorMsg(null);
+
+      if (isSignup) {
+        createUserWithEmailAndPassword(auth, values.email, values.password)
+          .then((userCredential) => {
+            // Signed up
+            const user = userCredential.user;
+            updateProfile(auth.currentUser, {
+              displayName: values.userName,
+            })
+              .then(() => {
+                let { displayName, email, uid } = auth.currentUser;
+
+                dispatch(addUser({ displayName : displayName, email : email, uid : uid }));
+                navigate("/browse");
+              })
+              .catch((error) => {
+                setErrorMsg(error);
+              });
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+            setErrorMsg(errorCode + "  " + errorMessage);
+          });
+      } else {
+        signInWithEmailAndPassword(auth, values.email, values.password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user);
+            navigate("/browse");
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+            setErrorMsg(errorCode + "  " + errorMessage);
+          });
+      }
+
       action.resetForm();
     },
   });
 
-
-  let handleToggle = ()=>{
+  let handleToggle = () => {
     setIsSignup((prev) => !prev);
     formik.resetForm({
       values: {
@@ -31,7 +86,7 @@ const Login = () => {
       errors: {},
       touched: {},
     });
-  }
+  };
 
   return (
     <div className="h-screen bg-netflix-bg bg-cover bg-center shadow-inner">
@@ -52,7 +107,7 @@ const Login = () => {
               className="w-full p-3 text-white rounded-sm bg-transparent outline-none border-2 border-gray-700"
               type="text"
               placeholder="Username"
-              value = {formik.values.userName}
+              value={formik.values.userName}
               onBlur={formik.handleBlur}
             />
           ) : null}
@@ -65,7 +120,7 @@ const Login = () => {
             className="w-full p-3 text-white rounded-sm bg-transparent outline-none border-2 border-gray-700"
             type="text"
             placeholder="Email"
-            value = {formik.values.email}
+            value={formik.values.email}
             onBlur={formik.handleBlur}
           />
           {formik.errors.email && formik.touched.email ? (
@@ -73,12 +128,11 @@ const Login = () => {
           ) : null}
           <input
             name="password"
-         
             onChange={formik.handleChange}
             className="w-full p-3 text-white rounded-sm bg-transparent outline-none border-2 border-gray-700"
             type="password"
             placeholder="Password"
-            value = {formik.values.password}
+            value={formik.values.password}
             onBlur={formik.handleBlur}
           />
           {formik.errors.password && formik.touched.password ? (
@@ -93,7 +147,7 @@ const Login = () => {
           </button>
 
           <p className="w-full text-sm sm:text-base md:text-lg text-white mx-auto mb-10 md:mb-20 text-center">
-            {isSignup ?  "Already have account ? " :  "New to Netflix?"}
+            {isSignup ? "Already have account ? " : "New to Netflix?"}
             <span
               className="text-blue-600 cursor-pointer"
               onClick={handleToggle}
@@ -101,6 +155,7 @@ const Login = () => {
               {isSignup ? "  LogIn " : " Signup "}
             </span>
           </p>
+          <p className="text-red-600"> {errorMsg != null ? errorMsg : null}</p>
         </form>
       </div>
     </div>
