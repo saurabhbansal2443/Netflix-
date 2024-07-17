@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import netflixLogo from "../../public/assets/netflixlogo.png";
 import netflixUser from "../../public/assets/netflixUser.jpg";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteUser } from "../Utils/userSlice";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut ,  onAuthStateChanged } from "firebase/auth";
 import { app } from "../Utils/firebase";
 import { useNavigate } from "react-router-dom";
+import { addUser, deleteUser } from "../Utils/userSlice";
+
 
 const Header = () => {
   const auth = getAuth(app);
@@ -17,15 +18,30 @@ const Header = () => {
     signOut(auth)
       .then(() => {
         dispatch(deleteUser());
-        navigate("/");
+       
       })
       .catch((error) => {
         // An error happened.
       });
   };
 
+  useEffect(() => {
+    let unsubscribed = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, displayName, email } = user;
+        dispatch(addUser({ uid: uid, displayName: displayName, email: email }));
+        navigate("/browse");
+      } else {
+        dispatch(deleteUser(null));
+        navigate("/");
+      }
+    });
+
+    return ()=> unsubscribed();
+  }, []);
+
   return (
-    <div className="w-full h-20 bg-gradient-to-b from-black absolute flex justify-between items-center px-4 sm:px-8">
+    <div className="w-full h-20 bg-gradient-to-b from-black absolute flex justify-between items-center px-4 sm:px-8 z-40">
       <img
         className="h-10 sm:h-14 md:h-16 lg:h-18 xl:h-20"
         src={netflixLogo}
@@ -34,7 +50,7 @@ const Header = () => {
       {user ? (
         <div className="flex items-center">
           <img
-            className="h-10 w-10 rounded-full"
+            className="h-10 w-10 "
             src={netflixUser}
             alt="user"
           />
