@@ -10,4 +10,4 @@ export const api_options = {
   };
 
   export let ytLink = 'https://www.youtube.com/watch?v='
-  export let posterUrl = "https://image.tmdb.org/t/p/w780"
+  export let posterUrl = "https://image.tmdb.org/t/p/w500"

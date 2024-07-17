@@ -4,7 +4,7 @@ import useGetVideoData from "../hooks/useGetVideoData";
 const VideoBackground = ({ id }) => {
   const videoKey = useGetVideoData(id);
   return (
-    <div className="w-screen">
+    <div className="w-screen z-10">
       {videoKey && (
         <iframe
           className="w-screen aspect-video"
