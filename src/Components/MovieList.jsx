@@ -4,15 +4,15 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const MovieList = ({ title, movies }) => {
+const MovieList = ({ title, movies , time  }) => {
   const settings = {
-    dots: true,
+    // dots: true,
     infinite: true,
     slidesToShow: 5,
     slidesToScroll: 1,
-    // autoplay: true,
-    // autoplaySpeed: 2000,
-    // pauseOnHover: true,
+    autoplay: true,
+    autoplaySpeed: time,
+    pauseOnHover: true,
   };
 
   return (

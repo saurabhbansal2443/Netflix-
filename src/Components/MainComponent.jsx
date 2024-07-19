@@ -7,7 +7,7 @@ import VideoBackground from './VideoBackground';
 const MainComponent = () => {
     let allMovies = useSelector(store => store.movies?.nowPlayingMovies);
     if (!allMovies) return ;
-    let mainMovie = allMovies[Math.floor(Math.random()*allMovies.length )];
+    let mainMovie = allMovies[1];
     console.log(mainMovie)
     let {title , overview , id } = mainMovie;
   return (

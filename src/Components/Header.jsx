@@ -6,6 +6,7 @@ import { getAuth, signOut ,  onAuthStateChanged } from "firebase/auth";
 import { app } from "../Utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { addUser, deleteUser } from "../Utils/userSlice";
+import { toggleGptSearchView } from "../Utils/GptSlice";
 
 
 const Header = () => {
@@ -13,6 +14,10 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+
+  let handleGptClick = () => {
+    dispatch(toggleGptSearchView());
+  } 
 
   const handleSignout = () => {
     signOut(auth)
@@ -49,6 +54,7 @@ const Header = () => {
       />
       {user ? (
         <div className="flex items-center">
+          <p className='bg-purple-600 text-white p-2 text-xl  mx-4 rounded-lg font-bold ' onClick={handleGptClick}>  GPT Search </p>
           <img
             className="h-10 w-10 "
             src={netflixUser}

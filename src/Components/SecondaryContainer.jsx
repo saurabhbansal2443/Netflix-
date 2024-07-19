@@ -6,11 +6,11 @@ const SecondaryContainer = () => {
     let movies   = useSelector(store => store?.movies)
     let { nowPlayingMovies , popularMovies , topRatedMovies , upcomingMovies  } = movies ;
   return (
-    <div className='-mt-40 mx-8'>
-      <MovieList title={"Now Playing"} movies={nowPlayingMovies}> </MovieList>
-      <MovieList title={"Popular Movies "} movies={popularMovies}> </MovieList>
-      <MovieList title={"Top Rated Movies "} movies={topRatedMovies}> </MovieList>
-      <MovieList title={"Upcoming Movies"} movies={upcomingMovies}> </MovieList> 
+    <div className='-mt-44 mx-8'>
+      <MovieList title={"Now Playing"} movies={nowPlayingMovies} time={1000}> </MovieList>
+      <MovieList title={"Popular Movies "} movies={popularMovies} time={1500}> </MovieList>
+      <MovieList title={"Top Rated Movies "} movies={topRatedMovies} time={2000}> </MovieList>
+      <MovieList title={"Upcoming Movies"} movies={upcomingMovies} time={2500}> </MovieList> 
     </div>
   )
 }
